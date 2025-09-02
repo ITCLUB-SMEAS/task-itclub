@@ -129,6 +129,48 @@ class AuthController extends Controller
         $pendingTasks = Task::where('status', 'pending')->count();
         $approvedTasks = Task::where('status', 'approved')->count();
         $rejectedTasks = Task::where('status', 'rejected')->count();
+        $totalTasks = $pendingTasks + $approvedTasks + $rejectedTasks;
+
+        // Data untuk grafik per kelas
+        $tasksByClass = User::where('role', 'student')
+            ->select('kelas')
+            ->selectRaw('COUNT(DISTINCT users.id) as total_students')
+            ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "approved" THEN tasks.id END) as approved_count')
+            ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "pending" THEN tasks.id END) as pending_count')
+            ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "rejected" THEN tasks.id END) as rejected_count')
+            ->leftJoin('tasks', 'users.id', '=', 'tasks.user_id')
+            ->groupBy('kelas')
+            ->get();
+
+        // Data untuk grafik pengumpulan tugas per hari (7 hari terakhir)
+        $submissionTrend = Task::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Format data untuk grafik trend
+        $dateLabels = [];
+        $submissionCounts = [];
+
+        // Siapkan array untuk 7 hari terakhir
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $dateLabels[] = now()->subDays($i)->format('d M');
+
+            $found = false;
+            foreach ($submissionTrend as $trend) {
+                if ($trend->date == $date) {
+                    $submissionCounts[] = $trend->count;
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $submissionCounts[] = 0;
+            }
+        }
 
         // Cari siswa paling rajin berdasarkan tugas yang disetujui
         $topStudent = User::where('role', 'student')
@@ -146,6 +188,15 @@ class AuthController extends Controller
             ];
         }
 
+        // Deadline statistik - menghitung tugas yang mendekati deadline
+        $upcomingDeadlines = Task::whereDate('deadline', '>=', now())
+            ->whereDate('deadline', '<=', now()->addDays(3))
+            ->count();
+
+        // On-time vs Late submission
+        $onTimeSubmissions = Task::whereColumn('created_at', '<=', 'deadline')->count();
+        $lateSubmissions = Task::whereColumn('created_at', '>', 'deadline')->count();
+
         // Ambil data tugas terbaru untuk tabel (maksimal 10 tugas terbaru)
         $recentTasks = Task::with('user')->latest()->limit(10)->get();
 
@@ -153,8 +204,15 @@ class AuthController extends Controller
             'pendingTasks',
             'approvedTasks',
             'rejectedTasks',
+            'totalTasks',
+            'tasksByClass',
+            'dateLabels',
+            'submissionCounts',
             'topStudent',
-            'recentTasks'
+            'recentTasks',
+            'upcomingDeadlines',
+            'onTimeSubmissions',
+            'lateSubmissions'
         ));
     }
 
@@ -173,11 +231,39 @@ class AuthController extends Controller
         // Ambil riwayat tugas user dengan urutan terbaru
         $recentTasks = $user->tasks()->latest()->limit(5)->get();
 
+        // Dapatkan tugas dengan deadline mendekat (3 hari ke depan)
+        $upcomingDeadlines = \App\Models\TaskAssignment::where('is_active', true)
+            ->where('deadline', '>', now())
+            ->where('deadline', '<=', now()->addDays(3))
+            ->get()
+            ->map(function($assignment) {
+                // Cek apakah siswa sudah mengumpulkan tugas ini
+                $hasSubmitted = Auth::user()->tasks()
+                    ->where('assignment_id', $assignment->id)
+                    ->exists();
+
+                // Hanya tampilkan tugas yang belum dikumpulkan
+                if (!$hasSubmitted) {
+                    return [
+                        'id' => $assignment->id,
+                        'title' => $assignment->title,
+                        'deadline' => $assignment->deadline,
+                        'formatted_deadline' => $assignment->deadline->format('d M Y, H:i'),
+                        'time_left' => $assignment->deadline->diffForHumans(),
+                        'days_left' => now()->diffInDays($assignment->deadline)
+                    ];
+                }
+                return null;
+            })
+            ->filter() // Hapus nilai null
+            ->values(); // Re-index array
+
         return view('student_dashboard', compact(
             'pendingTasks',
             'approvedTasks',
             'rejectedTasks',
-            'recentTasks'
+            'recentTasks',
+            'upcomingDeadlines'
         ));
     }
 }

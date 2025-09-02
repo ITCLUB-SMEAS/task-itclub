@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskAssignmentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TeamMemberController;
+use App\Http\Controllers\TeamAssignmentController as TeamAssignCtrl;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -69,7 +72,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/assignments/{assignment}/submit', [TaskController::class, 'storeAssignmentSubmission'])->name('assignments.submit');
 
         // Notification routes for students
-        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+            // Komentar
+    Route::post('/tasks/{task}/comments', [App\Http\Controllers\TaskCommentController::class, 'store'])->name('task.comments.store');
+    Route::delete('/comments/{comment}', [App\Http\Controllers\TaskCommentController::class, 'destroy'])->name('task.comments.destroy');
+
+    // Notifikasi
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/count', [NotificationController::class, 'getUnreadCount'])->name('notifications.count');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
@@ -79,6 +87,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/tasks', [TaskController::class, 'index'])->name('admin.tasks');
         Route::patch('/admin/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('admin.tasks.status');
+        Route::patch('/admin/tasks/{task}/grade', [TaskController::class, 'giveGrade'])->name('admin.tasks.grade');
+
+        // Export routes
+        Route::get('/admin/export/tasks', [App\Http\Controllers\ExportController::class, 'exportTasks'])->name('admin.export.tasks');
+        Route::get('/admin/export/assignment-report', [App\Http\Controllers\ExportController::class, 'exportAssignmentReport'])->name('admin.export.assignment');
 
         // Task Assignment Management
         Route::resource('admin/assignments', TaskAssignmentController::class)->names([
@@ -90,5 +103,64 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update' => 'admin.assignments.update',
             'destroy' => 'admin.assignments.destroy',
         ]);
+
+        // Team Management for Admin
+        Route::prefix('admin/teams')->name('admin.teams.')->middleware('role:admin')->group(function () {
+            Route::get('/', [TeamController::class, 'index'])->name('index');
+            Route::get('/create', [TeamController::class, 'create'])->name('create');
+            Route::post('/', [TeamController::class, 'store'])->name('store');
+            Route::get('/{team}', [TeamController::class, 'show'])->name('show');
+            Route::get('/{team}/edit', [TeamController::class, 'edit'])->name('edit');
+            Route::put('/{team}', [TeamController::class, 'update'])->name('update');
+            Route::delete('/{team}', [TeamController::class, 'destroy'])->name('destroy');
+            Route::post('/{team}/regenerate-code', [TeamController::class, 'regenerateCode'])->name('regenerate-code');
+            Route::post('/{team}/toggle-status', [TeamController::class, 'toggleStatus'])->name('toggle-status');
+
+            // Team Members
+            Route::get('/{team}/members', [TeamMemberController::class, 'index'])->name('members.index');
+            Route::get('/{team}/members/create', [TeamMemberController::class, 'create'])->name('members.create');
+            Route::post('/{team}/members', [TeamMemberController::class, 'store'])->name('members.store');
+            Route::get('/{team}/members/{member}', [TeamMemberController::class, 'show'])->name('members.show');
+            Route::get('/{team}/members/{member}/edit', [TeamMemberController::class, 'edit'])->name('members.edit');
+            Route::put('/{team}/members/{member}', [TeamMemberController::class, 'update'])->name('members.update');
+            Route::delete('/{team}/members/{member}', [TeamMemberController::class, 'destroy'])->name('members.destroy');
+
+            // Team Assignments
+            Route::get('/{team}/assignments', [TeamAssignCtrl::class, 'index'])->name('assignments.index');
+            Route::get('/{team}/assignments/create', [TeamAssignCtrl::class, 'create'])->name('assignments.create');
+            Route::post('/{team}/assignments', [TeamAssignCtrl::class, 'store'])->name('assignments.store');
+            Route::get('/{team}/assignments/{assignment}', [TeamAssignCtrl::class, 'show'])->name('assignments.show');
+            Route::get('/{team}/assignments/{assignment}/edit', [TeamAssignCtrl::class, 'edit'])->name('assignments.edit');
+            Route::put('/{team}/assignments/{assignment}', [TeamAssignCtrl::class, 'update'])->name('assignments.update');
+            Route::delete('/{team}/assignments/{assignment}', [TeamAssignCtrl::class, 'destroy'])->name('assignments.destroy');
+            Route::post('/{team}/assignments/{assignment}/feedback', [TeamAssignCtrl::class, 'provideFeedback'])->name('assignments.feedback');
+        });
+    });
+
+    // Team Management for Student
+    Route::prefix('student/teams')->name('student.teams.')->middleware('role:student')->group(function () {
+        Route::get('/', [TeamController::class, 'index'])->name('index');
+        Route::get('/create', [TeamController::class, 'create'])->name('create');
+        Route::post('/', [TeamController::class, 'store'])->name('store');
+        Route::get('/{team}', [TeamController::class, 'show'])->name('show');
+        Route::get('/{team}/edit', [TeamController::class, 'edit'])->name('edit');
+        Route::put('/{team}', [TeamController::class, 'update'])->name('update');
+        Route::delete('/{team}', [TeamController::class, 'destroy'])->name('destroy');
+        Route::post('/join', [TeamController::class, 'joinByCode'])->name('join');
+        Route::post('/{team}/regenerate-code', [TeamController::class, 'regenerateCode'])->name('regenerate-code');
+        Route::post('/{team}/toggle-status', [TeamController::class, 'toggleStatus'])->name('toggle-status');
+
+        // Team Members
+        Route::get('/{team}/members', [TeamMemberController::class, 'index'])->name('members.index');
+        Route::get('/{team}/members/create', [TeamMemberController::class, 'create'])->name('members.create');
+        Route::post('/{team}/members', [TeamMemberController::class, 'store'])->name('members.store');
+        Route::get('/{team}/members/{member}', [TeamMemberController::class, 'show'])->name('members.show');
+        Route::delete('/{team}/members/{member}', [TeamMemberController::class, 'destroy'])->name('members.destroy');
+        Route::post('/{team}/members/invite', [TeamMemberController::class, 'invite'])->name('members.invite');
+
+        // Team Assignments
+        Route::get('/{team}/assignments', [TeamAssignCtrl::class, 'index'])->name('assignments.index');
+        Route::get('/{team}/assignments/{assignment}', [TeamAssignCtrl::class, 'show'])->name('assignments.show');
+        Route::post('/{team}/assignments/{assignment}/submit', [TeamAssignCtrl::class, 'submitWork'])->name('assignments.submit');
     });
 });

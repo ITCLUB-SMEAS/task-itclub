@@ -7,8 +7,12 @@ use App\Models\TaskAssignment;
 use App\Models\Task;
 use App\Models\User;
 use App\Mail\AssignmentCreated;
+use App\Mail\DeadlineReminder;
 use App\Mail\TaskNeedsRevision;
+use App\Events\NewNotification;
+use App\Events\TaskUpdated;
 use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 
 class NotificationService
 {
@@ -22,11 +26,17 @@ class NotificationService
 
         foreach ($users as $user) {
             // Create in-app notification
-            $this->createInAppNotification($user, $assignment);
+            $notification = $this->createInAppNotification($user, $assignment);
+
+            // Broadcast notification
+            event(new NewNotification($notification));
 
             // Send email notification
             $this->sendEmailNotification($user, $assignment);
         }
+
+        // Broadcast task update
+        event(new TaskUpdated($assignment->task, 'assignment_created'));
     }
 
     /**
@@ -49,7 +59,7 @@ class NotificationService
      */
     private function createInAppNotification(User $user, TaskAssignment $assignment)
     {
-        Notification::create([
+        return Notification::create([
             'user_id' => $user->id,
             'type' => 'assignment_created',
             'title' => '📝 Tugas Baru: ' . $assignment->title,
@@ -78,14 +88,17 @@ class NotificationService
 
     /**
      * Send deadline reminder notifications
+     * @param int $hoursBeforeDeadline Jam sebelum deadline untuk mengirim pengingat
      */
-    public function sendDeadlineReminders()
+    public function sendDeadlineReminders($hoursBeforeDeadline = 24)
     {
-        // Get assignments with deadline in next 24 hours
+        // Get assignments with deadline in next X hours
         $assignments = TaskAssignment::where('is_active', true)
             ->where('deadline', '>', now())
-            ->where('deadline', '<=', now()->addHours(24))
+            ->where('deadline', '<=', now()->addHours($hoursBeforeDeadline))
             ->get();
+
+        $notificationCount = 0;
 
         foreach ($assignments as $assignment) {
             $users = $this->getTargetUsers($assignment);
@@ -98,9 +111,31 @@ class NotificationService
 
                 if (!$hasSubmitted) {
                     $this->createDeadlineReminderNotification($user, $assignment);
+                    $notificationCount++;
+
+                    // Convert hours to days for the email template
+                    $daysLeft = ceil($hoursBeforeDeadline / 24);
+
+                    // Create a virtual task for the email template
+                    $virtualTask = new Task([
+                        'judul_tugas' => $assignment->title,
+                        'deskripsi_tugas' => $assignment->description,
+                        'deadline' => $assignment->deadline,
+                        'assignment_id' => $assignment->id,
+                    ]);
+
+                    // Send email notification
+                    try {
+                        Mail::to($user->email)->send(new DeadlineReminder($virtualTask, $user, $daysLeft));
+                    } catch (\Exception $e) {
+                        // Log error but don't stop the process
+                        \Log::error('Failed to send deadline reminder email to ' . $user->email . ': ' . $e->getMessage());
+                    }
                 }
             }
         }
+
+        return $notificationCount;
     }
 
     /**
@@ -179,7 +214,7 @@ class NotificationService
             $message .= " Catatan admin: \"{$task->catatan_admin}\"";
         }
 
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => $user->id,
             'type' => 'task_needs_revision',
             'title' => $title,
@@ -191,6 +226,12 @@ class NotificationService
             ],
         ]);
 
+        // Broadcast notification
+        event(new NewNotification($notification));
+
+        // Broadcast task update event
+        event(new TaskUpdated($task, 'needs_revision'));
+
         // Send email notification
         try {
             Mail::to($user->email)->send(new TaskNeedsRevision($task));
@@ -198,5 +239,38 @@ class NotificationService
             // Log error but don't stop the process
             \Log::error('Failed to send task revision email to ' . $user->email . ': ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Send a general notification to a user
+     *
+     * @param int $userId ID of the user to notify
+     * @param string $title Notification title
+     * @param string $message Notification message
+     * @param string $type Type of notification
+     * @param string|null $url URL to redirect when notification is clicked
+     * @param array $data Additional data for the notification
+     * @return Notification
+     */
+    public function createNotification($userId, $title, $message, $type = 'general', $url = null, $data = [])
+    {
+        $data = $data ?: [];
+        if ($url) {
+            $data['url'] = $url;
+        }
+
+        $notification = Notification::create([
+            'user_id' => $userId,
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'data' => $data,
+            'read_at' => null,
+        ]);
+
+        // Broadcast the notification
+        event(new NewNotification($notification));
+
+        return $notification;
     }
 }

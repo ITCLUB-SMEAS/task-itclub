@@ -49,7 +49,7 @@
                 <p class="mt-2 text-2xl font-bold text-gray-900">{{ $tasks->count() }}</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-sm font-medium text-gray-700">Perlu Review</h3>
+                <h3 class="text-sm font-medium text-gray-700">Menunggu Review</h3>
                 <p class="mt-2 text-2xl font-bold text-yellow-600">{{ $tasks->where('status', 'pending')->count() }}</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow">
@@ -62,7 +62,52 @@
             </div>
         </div>
 
-        <!-- Tabel Semua Tugas -->
+        <!-- Filter & Search Tools -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <form action="{{ route('admin.tasks') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari</label>
+                    <input type="text" name="search" id="search" placeholder="Nama/Email Siswa"
+                        value="{{ request('search') }}"
+                        class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                </div>
+
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select name="status" id="status" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Review</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Perlu Revisi</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                    <select name="kelas" id="kelas" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                        <option value="">Semua Kelas</option>
+                        @foreach($kelasOptions as $kelas)
+                            <option value="{{ $kelas }}" {{ request('kelas') == $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Filter Tugas
+                    </button>
+                    <a href="{{ route('admin.tasks') }}" class="ml-2 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Reset
+                    </a>
+                    <a href="{{ route('admin.export.tasks') }}?{{ http_build_query(request()->all()) }}" class="ml-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export Excel
+                    </a>
+                </div>
+            </form>
+        </div>        <!-- Tabel Semua Tugas -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800">Semua Tugas</h2>
@@ -77,6 +122,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GitHub</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -112,6 +158,24 @@
                                             Perlu Revisi
                                         @endif
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    @if($task->nilai !== null)
+                                        <span class="font-medium {{ $task->nilai >= 70 ? 'text-green-600' : 'text-red-600' }}">
+                                            {{ $task->nilai }}/100
+                                        </span>
+                                    @else
+                                        <form action="{{ route('admin.tasks.grade', $task) }}" method="POST" class="flex items-center space-x-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="number" name="nilai" min="0" max="100"
+                                                class="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+                                                placeholder="0-100" required>
+                                            <button type="submit" class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
+                                                Set
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">

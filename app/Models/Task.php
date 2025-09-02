@@ -25,6 +25,7 @@ class Task extends Model
         'status',
         'is_late',
         'catatan_admin',
+        'nilai',
     ];
 
     protected $casts = [
@@ -48,5 +49,13 @@ class Task extends Model
     public function assignment()
     {
         return $this->belongsTo(TaskAssignment::class, 'assignment_id');
+    }
+
+    /**
+     * Relasi ke TaskComment
+     */
+    public function comments()
+    {
+        return $this->hasMany(TaskComment::class)->orderBy('created_at', 'desc');
     }
 }

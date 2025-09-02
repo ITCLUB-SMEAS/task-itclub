@@ -3,27 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="user-id" content="{{ Auth::id() }}">
     <title>Dasbor Admin - Pengumpulan Tugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('js/darkmode.js') }}"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .modal-hidden { display: none; }
+
+        /* Dark mode styles */
+        .dark body { background-color: #1a1a1a; color: #e1e1e1; }
+        .dark .bg-white { background-color: #2a2a2a; }
+        .dark .bg-gray-100 { background-color: #1a1a1a; }
+        .dark .text-gray-900 { color: #e1e1e1; }
+        .dark .text-gray-600, .dark .text-gray-500 { color: #9ca3af; }
+        .dark .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5); }
+        .dark .border-gray-200 { border-color: #4a4a4a; }
+        .dark .bg-gray-50 { background-color: #2a2a2a; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <header class="bg-white dark:bg-gray-800 shadow-sm">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-900">Dasbor Admin</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dasbor Admin</h1>
             <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600">Selamat datang, {{ Auth::user()->name }}!</span>
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                    </svg>
+                </button>
+                <span class="text-sm text-gray-600 dark:text-gray-300">Selamat datang, {{ Auth::user()->name }}!</span>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</button>
+                    <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">Logout</button>
                 </form>
             </div>
         </div>
@@ -54,18 +76,64 @@
         </div>
 
         <!-- Ringkasan Statistik -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-lg font-medium text-gray-700">Perlu Direview</h3>
                 <p class="mt-2 text-3xl font-bold text-gray-900">{{ $pendingTasks }}</p>
+                <div class="mt-2 text-sm text-gray-500">{{ $totalTasks > 0 ? round(($pendingTasks / $totalTasks) * 100) : 0 }}% dari total tugas</div>
             </div>
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-lg font-medium text-gray-700">Disetujui</h3>
                 <p class="mt-2 text-3xl font-bold text-gray-900">{{ $approvedTasks }}</p>
+                <div class="mt-2 text-sm text-gray-500">{{ $totalTasks > 0 ? round(($approvedTasks / $totalTasks) * 100) : 0 }}% dari total tugas</div>
             </div>
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-lg font-medium text-gray-700">Perlu Revisi</h3>
                 <p class="mt-2 text-3xl font-bold text-gray-900">{{ $rejectedTasks }}</p>
+                <div class="mt-2 text-sm text-gray-500">{{ $totalTasks > 0 ? round(($rejectedTasks / $totalTasks) * 100) : 0 }}% dari total tugas</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-700">Deadline Mendekat</h3>
+                <p class="mt-2 text-3xl font-bold text-gray-900">{{ $upcomingDeadlines }}</p>
+                <div class="mt-2 text-sm text-gray-500">Dalam 3 hari ke depan</div>
+            </div>
+        </div>
+
+        <!-- Grafik Statistik -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Grafik Status Pengumpulan -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Status Pengumpulan</h3>
+                <div class="h-64">
+                    <canvas id="submissionStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik Trend Pengumpulan -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Trend Pengumpulan (7 Hari Terakhir)</h3>
+                <div class="h-64">
+                    <canvas id="submissionTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafik Statistik Baris 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Grafik Per Kelas -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Performa Per Kelas</h3>
+                <div class="h-64">
+                    <canvas id="classPerformanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Grafik On-time vs Late -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-700 mb-4">Ketepatan Waktu Pengumpulan</h3>
+                <div class="h-64">
+                    <canvas id="timelinessChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -262,6 +330,143 @@
             if (e.target === modal) {
                 closeRevisionModal();
             }
+        });
+
+        // Chart.js Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Status Pengumpulan Chart
+            const statusCtx = document.getElementById('submissionStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Perlu Review', 'Disetujui', 'Perlu Revisi'],
+                    datasets: [{
+                        data: [{{ $pendingTasks }}, {{ $approvedTasks }}, {{ $rejectedTasks }}],
+                        backgroundColor: ['#FBBF24', '#10B981', '#EF4444'],
+                        hoverBackgroundColor: ['#F59E0B', '#059669', '#DC2626']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Trend Pengumpulan Chart
+            const trendCtx = document.getElementById('submissionTrendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($dateLabels) !!},
+                    datasets: [{
+                        label: 'Jumlah Tugas',
+                        data: {!! json_encode($submissionCounts) !!},
+                        borderColor: '#6366F1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Class Performance Chart
+            const classData = {!! json_encode($tasksByClass) !!};
+            const classLabels = classData.map(item => item.kelas || 'Tidak ada kelas');
+            const approvedByClass = classData.map(item => item.approved_count);
+            const pendingByClass = classData.map(item => item.pending_count);
+            const rejectedByClass = classData.map(item => item.rejected_count);
+
+            const classCtx = document.getElementById('classPerformanceChart').getContext('2d');
+            new Chart(classCtx, {
+                type: 'bar',
+                data: {
+                    labels: classLabels,
+                    datasets: [
+                        {
+                            label: 'Disetujui',
+                            data: approvedByClass,
+                            backgroundColor: '#10B981'
+                        },
+                        {
+                            label: 'Perlu Review',
+                            data: pendingByClass,
+                            backgroundColor: '#FBBF24'
+                        },
+                        {
+                            label: 'Perlu Revisi',
+                            data: rejectedByClass,
+                            backgroundColor: '#EF4444'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Timeliness Chart
+            const timelinessCtx = document.getElementById('timelinessChart').getContext('2d');
+            new Chart(timelinessCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tepat Waktu', 'Terlambat'],
+                    datasets: [{
+                        data: [{{ $onTimeSubmissions }}, {{ $lateSubmissions }}],
+                        backgroundColor: ['#10B981', '#EF4444'],
+                        hoverBackgroundColor: ['#059669', '#DC2626']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
         });
     </script>
 

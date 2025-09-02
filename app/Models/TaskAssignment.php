@@ -14,6 +14,8 @@ class TaskAssignment extends Model
         'description',
         'category',
         'difficulty',
+        'is_team_based',
+        'max_team_members',
         'deadline',
         'is_active',
         'requirements',
@@ -24,6 +26,8 @@ class TaskAssignment extends Model
         'deadline' => 'datetime',
         'is_active' => 'boolean',
         'requirements' => 'array',
+        'is_team_based' => 'boolean',
+        'max_team_members' => 'integer',
     ];
 
     /**
@@ -32,6 +36,14 @@ class TaskAssignment extends Model
     public function submissions()
     {
         return $this->hasMany(Task::class, 'assignment_id');
+    }
+
+    /**
+     * Get team submissions for this assignment
+     */
+    public function teamSubmissions()
+    {
+        return $this->hasMany(TeamAssignment::class, 'assignment_id');
     }
 
     /**

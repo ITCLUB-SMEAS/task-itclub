@@ -63,4 +63,38 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
     }
+
+    /**
+     * Get teams led by this user
+     */
+    public function ledTeams()
+    {
+        return $this->hasMany(Team::class, 'leader_id');
+    }
+
+    /**
+     * Get team memberships
+     */
+    public function teamMemberships()
+    {
+        return $this->hasMany(TeamMember::class);
+    }
+
+    /**
+     * Get all teams user is a member of
+     */
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_members')
+            ->withPivot('role', 'is_active')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get team assignments submitted by this user
+     */
+    public function teamAssignmentsSubmitted()
+    {
+        return $this->hasMany(TeamAssignment::class, 'submitted_by');
+    }
 }

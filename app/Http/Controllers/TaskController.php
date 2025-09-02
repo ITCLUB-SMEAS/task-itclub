@@ -206,10 +206,36 @@ class TaskController extends Controller
     /**
      * Menampilkan semua tugas (untuk admin)
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::with(['user', 'assignment'])->latest()->get();
-        return view('admin.tasks.index', compact('tasks'));
+        $query = Task::with(['user', 'assignment']);
+
+        // Filter by search term
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by kelas
+        if ($request->has('kelas') && !empty($request->kelas)) {
+            $query->where('kelas', $request->kelas);
+        }
+
+        // Get tasks
+        $tasks = $query->latest()->get();
+
+        // Get unique kelas values for filter dropdown
+        $kelasOptions = Task::select('kelas')->distinct()->pluck('kelas')->toArray();
+
+        return view('admin.tasks.index', compact('tasks', 'kelasOptions'));
     }
 
     /**
@@ -240,6 +266,22 @@ class TaskController extends Controller
         }
 
         return redirect()->back()->with('success', 'Status tugas berhasil diupdate.');
+    }
+
+    /**
+     * Memberikan nilai tugas (untuk admin)
+     */
+    public function giveGrade(Request $request, Task $task)
+    {
+        $request->validate([
+            'nilai' => 'required|integer|min:0|max:100',
+        ]);
+
+        $task->update([
+            'nilai' => $request->nilai,
+        ]);
+
+        return redirect()->back()->with('success', 'Nilai berhasil diberikan.');
     }
 
     /**

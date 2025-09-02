@@ -6,6 +6,7 @@
     <title>Login - Pengumpulan Tugas</title>
     <!-- Memuat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('js/darkmode.js') }}"></script>
     <!-- Memuat Font Inter dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,17 +16,39 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        /* Dark mode styles */
+        .dark body { background-color: #1a1a1a; color: #e1e1e1; }
+        .dark .bg-white { background-color: #2a2a2a; }
+        .dark .bg-gray-50 { background-color: #121212; }
+        .dark .text-gray-800 { color: #e1e1e1; }
+        .dark .text-gray-500 { color: #9ca3af; }
+        .dark .text-gray-600 { color: #9ca3af; }
+        .dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+        .dark .hover\:shadow-xl:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2); }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-50 dark:bg-gray-900 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Tombol tema -->
+    <div class="absolute top-4 right-4">
+        <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+        </button>
+    </div>
 
     <!-- Wrapper utama untuk formulir login -->
-    <div class="w-full max-w-md mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-lg transition-shadow hover:shadow-xl">
+    <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-2xl shadow-lg transition-shadow hover:shadow-xl">
 
         <!-- Judul Formulir -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Selamat Datang Kembali</h1>
-            <p class="text-gray-500 mt-2">Silakan login ke akun Anda.</p>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Selamat Datang Kembali</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Silakan login ke akun Anda.</p>
         </div>
 
         <!-- Elemen Formulir Login -->

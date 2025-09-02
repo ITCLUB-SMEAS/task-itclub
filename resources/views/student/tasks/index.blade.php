@@ -112,6 +112,14 @@
                                 <div>
                                     <span class="font-medium">Tanggal:</span> {{ $task->tanggal_mengumpulkan->format('d F Y') }}
                                 </div>
+                                @if($task->status == 'approved' && $task->nilai !== null)
+                                <div class="md:col-span-2">
+                                    <span class="font-medium">Nilai:</span>
+                                    <span class="font-bold {{ $task->nilai >= 70 ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $task->nilai }}/100
+                                    </span>
+                                </div>
+                                @endif
                             </div>
 
                             @if($task->status == 'rejected' && $task->catatan_admin)

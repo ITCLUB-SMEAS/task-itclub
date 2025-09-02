@@ -440,6 +440,68 @@
     </div>
     @endif
 
+    <!-- Komentar Section -->
+    <div class="max-w-4xl mx-auto my-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Diskusi Tugas</h3>
+
+                <!-- Form untuk menambah komentar -->
+                <form action="{{ route('task.comments.store', $task) }}" method="POST" class="mb-6">
+                    @csrf
+                    <div class="mb-4">
+                        <textarea name="content" rows="3"
+                            class="shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
+                            placeholder="Tambahkan komentar atau pertanyaan tentang tugas ini..."></textarea>
+                    </div>
+                    <div>
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Kirim Komentar
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Daftar komentar -->
+                <div class="space-y-4">
+                    @forelse($task->comments as $comment)
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div class="font-medium text-gray-900">
+                                {{ $comment->user->name }}
+                                <span class="ml-2 text-xs font-normal text-gray-500">
+                                    {{ $comment->created_at->diffForHumans() }}
+                                </span>
+                                <span class="ml-2 text-xs font-normal text-blue-500 bg-blue-50 rounded px-2 py-0.5">
+                                    {{ $comment->user->role === 'admin' ? 'Admin' : 'Siswa' }}
+                                </span>
+                            </div>
+
+                            @if(Auth::id() === $comment->user_id || Auth::user()->role === 'admin')
+                            <form action="{{ route('task.comments.destroy', $comment) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-gray-400 hover:text-red-500" onclick="return confirm('Yakin ingin menghapus komentar ini?')">
+                                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                            @endif
+                        </div>
+                        <p class="mt-2 text-gray-600">{{ $comment->content }}</p>
+                    </div>
+                    @empty
+                    <div class="text-center text-gray-500 py-4">
+                        <p>Belum ada komentar untuk tugas ini.</p>
+                        <p class="text-sm mt-1">Silakan bertanya jika ada hal yang kurang jelas.</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function showUpdateForm() {
             document.getElementById('updateModal').classList.remove('hidden');
