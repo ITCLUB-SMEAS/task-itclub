@@ -118,9 +118,55 @@
         </div>
         @endif
 
+        <!-- Team Management Section -->
+        <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Tim & Kolaborasi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('student.teams.index') }}"
+                   class="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Tim Saya</div>
+                        <div class="text-sm opacity-90">Lihat tim yang kamu ikuti</div>
+                    </div>
+                </a>
+
+                <a href="{{ route('student.teams.create') }}"
+                   class="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Buat Tim</div>
+                        <div class="text-sm opacity-90">Buat tim baru</div>
+                    </div>
+                </a>
+
+                <form action="{{ route('student.teams.join') }}" method="POST" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4 rounded-lg shadow transition duration-300 flex">
+                    @csrf
+                    <div class="flex w-full">
+                        <div class="flex items-center mr-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium mb-1">Gabung Tim</div>
+                            <div class="flex">
+                                <input type="text" name="team_code" placeholder="Masukkan kode" class="w-full text-sm bg-white/20 rounded-l py-1 px-2 focus:outline-none focus:ring-2 focus:ring-white placeholder-white/50">
+                                <button type="submit" class="bg-white/30 hover:bg-white/40 px-2 rounded-r">Gabung</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Assignment Management Section -->
         <div class="mb-8">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Assignment System</h2>
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Assignment System</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <a href="{{ route('assignments.available') }}"
                    class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">

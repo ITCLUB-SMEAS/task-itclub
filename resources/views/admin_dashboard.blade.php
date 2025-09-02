@@ -137,6 +137,45 @@
             </div>
         </div>
 
+        <!-- Team Management -->
+        <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Manajemen Tim</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('admin.teams.index') }}"
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Kelola Tim</div>
+                        <div class="text-sm opacity-90">Lihat semua tim</div>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.teams.create') }}"
+                   class="bg-teal-600 hover:bg-teal-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Buat Tim Baru</div>
+                        <div class="text-sm opacity-90">Tambah tim baru</div>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.assignments.index') }}?type=team"
+                   class="bg-pink-600 hover:bg-pink-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Tugas Tim</div>
+                        <div class="text-sm opacity-90">Kelola tugas untuk tim</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- Quick Actions -->
         <div class="mb-8">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Manajemen Assignment</h2>
