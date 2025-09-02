@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('assignment_id')->nullable()->after('user_id')->constrained('task_assignments')->onDelete('set null');
+            $table->unsignedBigInteger('assignment_id')->nullable()->after('user_id');
             $table->datetime('deadline')->nullable()->after('tanggal_mengumpulkan');
             $table->string('category')->default('umum')->after('deskripsi_tugas');
             $table->string('difficulty')->default('medium')->after('category');
@@ -27,7 +27,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->dropForeign(['assignment_id']);
             $table->dropColumn(['assignment_id', 'deadline', 'category', 'difficulty', 'is_late', 'file_uploads']);
         });
     }
