@@ -84,11 +84,14 @@
                 </div>
 
                 <!-- Requirements -->
-                @if($assignment->requirements && count(json_decode($assignment->requirements, true)) > 0)
+                @php
+                    $requirementsArray = !empty($assignment->requirements) && is_array($assignment->requirements) ? $assignment->requirements : [];
+                @endphp
+                @if(count($requirementsArray) > 0)
                 <div class="bg-white shadow-sm rounded-lg p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Requirements yang Harus Dipenuhi</h3>
                     <ul class="space-y-3">
-                        @foreach(json_decode($assignment->requirements, true) as $index => $requirement)
+                        @foreach($requirementsArray as $index => $requirement)
                             <li class="flex items-start">
                                 <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 text-sm font-medium rounded-full flex items-center justify-center mr-3 mt-0.5">
                                     {{ $index + 1 }}

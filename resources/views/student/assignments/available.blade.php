@@ -163,18 +163,21 @@
                             </div>
 
                             <!-- Requirements Preview -->
-                            @if($assignment->requirements && count(json_decode($assignment->requirements, true)) > 0)
+                            @php
+                                $requirementsArray = !empty($assignment->requirements) && is_array($assignment->requirements) ? $assignment->requirements : [];
+                            @endphp
+                            @if(count($requirementsArray) > 0)
                                 <div class="mb-4">
-                                    <p class="text-xs text-gray-600 mb-1">Requirements ({{ count(json_decode($assignment->requirements, true)) }} item):</p>
+                                    <p class="text-xs text-gray-600 mb-1">Requirements ({{ count($requirementsArray) }} item):</p>
                                     <ul class="text-xs text-gray-700 space-y-1">
-                                        @foreach(array_slice(json_decode($assignment->requirements, true), 0, 2) as $requirement)
+                                        @foreach(array_slice($requirementsArray, 0, 2) as $requirement)
                                             <li class="flex items-start">
                                                 <span class="text-green-500 mr-1">✓</span>
                                                 <span>{{ Str::limit($requirement, 40) }}</span>
                                             </li>
                                         @endforeach
-                                        @if(count(json_decode($assignment->requirements, true)) > 2)
-                                            <li class="text-gray-500">+ {{ count(json_decode($assignment->requirements, true)) - 2 }} lainnya...</li>
+                                        @if(count($requirementsArray) > 2)
+                                            <li class="text-gray-500">+ {{ count($requirementsArray) - 2 }} lainnya...</li>
                                         @endif
                                     </ul>
                                 </div>
