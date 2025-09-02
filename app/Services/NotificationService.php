@@ -4,8 +4,10 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Models\TaskAssignment;
+use App\Models\Task;
 use App\Models\User;
 use App\Mail\AssignmentCreated;
+use App\Mail\TaskNeedsRevision;
 use Illuminate\Support\Facades\Mail;
 
 class NotificationService
@@ -150,5 +152,51 @@ class NotificationService
             'is_read' => true,
             'read_at' => now(),
         ]);
+    }
+
+    /**
+     * Send notification when task needs revision
+     */
+    public function sendTaskNeedsRevisionNotification(Task $task)
+    {
+        $user = $task->user;
+
+        // Skip if no user associated
+        if (!$user) {
+            return;
+        }
+
+        // Create in-app notification
+        $title = $task->assignment
+            ? "⚠️ Revisi: " . $task->assignment->title
+            : "⚠️ Tugas perlu direvisi";
+
+        $message = $task->assignment
+            ? "Tugas '{$task->assignment->title}' perlu direvisi."
+            : "Tugas yang Anda kumpulkan perlu direvisi.";
+
+        if ($task->catatan_admin) {
+            $message .= " Catatan admin: \"{$task->catatan_admin}\"";
+        }
+
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => 'task_needs_revision',
+            'title' => $title,
+            'message' => $message,
+            'data' => [
+                'task_id' => $task->id,
+                'assignment_id' => $task->assignment_id,
+                'catatan_admin' => $task->catatan_admin,
+            ],
+        ]);
+
+        // Send email notification
+        try {
+            Mail::to($user->email)->send(new TaskNeedsRevision($task));
+        } catch (\Exception $e) {
+            // Log error but don't stop the process
+            \Log::error('Failed to send task revision email to ' . $user->email . ': ' . $e->getMessage());
+        }
     }
 }

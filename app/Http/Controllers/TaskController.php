@@ -222,10 +222,22 @@ class TaskController extends Controller
             'catatan_admin' => 'nullable|string|max:1000',
         ]);
 
+        // Simpan status sebelumnya
+        $oldStatus = $task->status;
+        $newStatus = $request->status;
+
         $task->update([
-            'status' => $request->status,
+            'status' => $newStatus,
             'catatan_admin' => $request->catatan_admin,
         ]);
+
+        // Jika status berubah menjadi rejected, kirim notifikasi ke siswa
+        if ($newStatus === 'rejected' && $oldStatus !== 'rejected') {
+            $notificationService = app(\App\Services\NotificationService::class);
+            $notificationService->sendTaskNeedsRevisionNotification($task);
+
+            return redirect()->back()->with('success', 'Status tugas berhasil diupdate dan notifikasi revisi telah dikirim ke siswa.');
+        }
 
         return redirect()->back()->with('success', 'Status tugas berhasil diupdate.');
     }
