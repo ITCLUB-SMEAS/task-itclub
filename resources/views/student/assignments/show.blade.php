@@ -32,6 +32,16 @@
 
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                <ul class="list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         @if(session('success'))
             <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
                 {{ session('success') }}
@@ -124,28 +134,28 @@
 
                         <!-- Current Submission Details -->
                         <div class="space-y-4">
-                            @if($userSubmission->github_repo)
+                @if($userSubmission->github_link)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">GitHub Repository</label>
-                                    <a href="{{ $userSubmission->github_repo }}" target="_blank"
+                    <a href="{{ $userSubmission->github_link }}" target="_blank"
                                        class="text-blue-600 hover:text-blue-800 underline break-all">
-                                        {{ $userSubmission->github_repo }}
+                    {{ $userSubmission->github_link }}
                                     </a>
                                 </div>
                             @endif
 
-                            @if($userSubmission->description)
+                @if($userSubmission->deskripsi_tugas)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Submission</label>
-                                    <div class="bg-gray-50 rounded-lg p-3 text-gray-700 whitespace-pre-line">{{ $userSubmission->description }}</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-gray-700 whitespace-pre-line">{{ $userSubmission->deskripsi_tugas }}</div>
                                 </div>
                             @endif
 
-                            @if($userSubmission->file_uploads && count(json_decode($userSubmission->file_uploads, true)) > 0)
+                @if($userSubmission->file_uploads && is_array($userSubmission->file_uploads) && count($userSubmission->file_uploads) > 0)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">File yang Diupload</label>
                                     <div class="space-y-2">
-                                        @foreach(json_decode($userSubmission->file_uploads, true) as $file)
+                    @foreach($userSubmission->file_uploads as $file)
                                             <a href="{{ Storage::url($file) }}" target="_blank"
                                                class="flex items-center text-blue-600 hover:text-blue-800 text-sm">
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,6 +201,7 @@
 
                         <form action="{{ route('assignments.submit', $assignment->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                             @csrf
+                            <input type="hidden" name="assignment_id" value="{{ $assignment->id }}">
 
                             <!-- GitHub Repository -->
                             <div>
@@ -381,7 +392,7 @@
                         <input type="url"
                                id="update_github_repo"
                                name="github_repo"
-                               value="{{ $userSubmission->github_repo }}"
+                               value="{{ $userSubmission->github_link }}"
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                required>
                     </div>
@@ -394,7 +405,7 @@
                         <textarea id="update_description"
                                   name="description"
                                   rows="4"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">{{ $userSubmission->description }}</textarea>
+                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">{{ $userSubmission->deskripsi_tugas }}</textarea>
                     </div>
 
                     <!-- File Upload -->

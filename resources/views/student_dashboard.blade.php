@@ -148,7 +148,7 @@
                         <div class="text-gray-400 text-6xl mb-4">📝</div>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada tugas</h3>
                         <p class="text-gray-500 mb-4">Anda belum mengumpulkan tugas apapun.</p>
-                        <a href="{{ route('tasks.create') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 inline-block">
+                        <a href="{{ route('assignments.available') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 inline-block">
                             📝 Kumpulkan Tugas Pertama
                         </a>
                     </div>

@@ -89,7 +89,8 @@ class TaskController extends Controller
             'email' => $user->email,
             'github_link' => $request->github_repo,
             'deskripsi_tugas' => $request->description,
-            'file_uploads' => json_encode($uploadedFiles),
+            // Respect cast to array on the model; let Eloquent json-encode automatically
+            'file_uploads' => $uploadedFiles,
             'category' => $assignment->category,
             'difficulty' => $assignment->difficulty,
             'deadline' => $assignment->deadline,
@@ -174,9 +175,11 @@ class TaskController extends Controller
         $uploadedFiles = $task->file_uploads ?? [];
         if ($request->hasFile('files')) {
             // Delete old files
-            if (!empty($task->file_uploads)) {
+            if (!empty($task->file_uploads) && is_array($task->file_uploads)) {
                 foreach ($task->file_uploads as $oldFile) {
-                    Storage::disk('public')->delete($oldFile);
+                    if ($oldFile) {
+                        Storage::disk('public')->delete($oldFile);
+                    }
                 }
             }
 
@@ -188,7 +191,7 @@ class TaskController extends Controller
             }
         }
 
-                // Update submission
+    // Update submission
         $task->update([
             'github_link' => $request->github_repo,
             'deskripsi_tugas' => $request->description,

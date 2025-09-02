@@ -82,14 +82,14 @@
                 <!-- Submissions List -->
                 <div class="bg-white shadow-sm rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">Submissions ({{ $submissions->count() }})</h3>
+                        <h3 class="text-lg font-medium text-gray-900">Submissions ({{ $assignment->submissions->count() }})</h3>
                         <div class="text-sm text-gray-500">
-                            {{ $submissions->where('is_late', false)->count() }} tepat waktu,
-                            {{ $submissions->where('is_late', true)->count() }} terlambat
+                            {{ $assignment->submissions->where('is_late', false)->count() }} tepat waktu,
+                            {{ $assignment->submissions->where('is_late', true)->count() }} terlambat
                         </div>
                     </div>
 
-                    @if($submissions->count() > 0)
+                    @if($assignment->submissions->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -102,7 +102,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($submissions as $submission)
+                                    @foreach($assignment->submissions as $submission)
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-4 py-3">
                                                 <div class="text-sm font-medium text-gray-900">{{ $submission->user->name }}</div>
@@ -126,15 +126,15 @@
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 text-sm">
-                                                @if($submission->github_repo)
-                                                    <a href="{{ $submission->github_repo }}" target="_blank"
+                                                @if($submission->github_link)
+                                                    <a href="{{ $submission->github_link }}" target="_blank"
                                                        class="text-blue-600 hover:text-blue-900">
                                                         Lihat Repo
                                                     </a>
                                                 @endif
-                                                @if($submission->file_uploads && count(json_decode($submission->file_uploads, true)) > 0)
+                                                @if($submission->file_uploads && is_array($submission->file_uploads) && count($submission->file_uploads) > 0)
                                                     <div class="mt-1">
-                                                        @foreach(json_decode($submission->file_uploads, true) as $file)
+                                                        @foreach($submission->file_uploads as $file)
                                                             <a href="{{ Storage::url($file) }}" target="_blank"
                                                                class="text-green-600 hover:text-green-900 text-xs block">
                                                                 📎 {{ basename($file) }}
