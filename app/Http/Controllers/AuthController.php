@@ -133,13 +133,13 @@ class AuthController extends Controller
 
         // Data untuk grafik per kelas
         $tasksByClass = User::where('role', 'student')
-            ->select('kelas')
+            ->select('users.kelas')
             ->selectRaw('COUNT(DISTINCT users.id) as total_students')
             ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "approved" THEN tasks.id END) as approved_count')
             ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "pending" THEN tasks.id END) as pending_count')
             ->selectRaw('COUNT(DISTINCT CASE WHEN tasks.status = "rejected" THEN tasks.id END) as rejected_count')
             ->leftJoin('tasks', 'users.id', '=', 'tasks.user_id')
-            ->groupBy('kelas')
+            ->groupBy('users.kelas')
             ->get();
 
         // Data untuk grafik pengumpulan tugas per hari (7 hari terakhir)
