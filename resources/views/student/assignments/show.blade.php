@@ -189,9 +189,8 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                        <form action="{{ route('assignments.submit', $assignment->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                             @csrf
-                            <input type="hidden" name="assignment_id" value="{{ $assignment->id }}">
 
                             <!-- GitHub Repository -->
                             <div>

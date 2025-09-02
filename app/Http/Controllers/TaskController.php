@@ -35,15 +35,22 @@ class TaskController extends Controller
     /**
      * Store assignment-based submission
      */
-    protected function storeAssignmentSubmission(Request $request)
+    public function storeAssignmentSubmission(Request $request, TaskAssignment $assignment = null)
     {
+        // Get assignment from parameter or request
+        if (!$assignment && $request->has('assignment_id')) {
+            $assignment = TaskAssignment::findOrFail($request->assignment_id);
+        }
+
+        if (!$assignment) {
+            return redirect()->back()->with('error', 'Assignment tidak ditemukan.');
+        }
+
         $request->validate([
-            'assignment_id' => 'required|exists:task_assignments,id',
             'github_repo' => 'required|url|max:500',
             'description' => 'nullable|string|max:1000',
             'files.*' => 'nullable|file|max:10240|mimes:pdf,doc,docx,zip,rar,png,jpg,jpeg',
         ], [
-            'assignment_id.required' => 'Assignment tidak valid.',
             'github_repo.required' => 'Link GitHub wajib diisi.',
             'github_repo.url' => 'Format URL GitHub tidak valid.',
             'files.*.max' => 'Ukuran file maksimal 10MB.',
@@ -51,7 +58,6 @@ class TaskController extends Controller
         ]);
 
         $user = Auth::user();
-        $assignment = TaskAssignment::findOrFail($request->assignment_id);
 
         // Check if user already submitted this assignment
         $existingSubmission = Task::where('user_id', $user->id)
@@ -75,7 +81,7 @@ class TaskController extends Controller
         $isLate = now()->isAfter($assignment->deadline);
 
         // Create submission
-        Task::create([
+        $task = Task::create([
             'user_id' => $user->id,
             'assignment_id' => $assignment->id,
             'nama_lengkap' => $user->name,
@@ -83,11 +89,11 @@ class TaskController extends Controller
             'email' => $user->email,
             'github_link' => $request->github_repo,
             'deskripsi_tugas' => $request->description,
-            'file_uploads' => $uploadedFiles,
+            'file_uploads' => json_encode($uploadedFiles),
             'category' => $assignment->category,
             'difficulty' => $assignment->difficulty,
             'deadline' => $assignment->deadline,
-            'tanggal_mengumpulkan' => now(),
+            'tanggal_mengumpulkan' => now()->toDateString(),
             'is_late' => $isLate,
             'status' => 'pending'
         ]);
@@ -96,7 +102,7 @@ class TaskController extends Controller
             ? 'Assignment berhasil dikumpulkan (terlambat)! Menunggu review admin.'
             : 'Assignment berhasil dikumpulkan! Menunggu review admin.';
 
-        return redirect()->back()->with('success', $message);
+        return redirect()->route('assignments.show', $assignment->id)->with('success', $message);
     }
 
     /**

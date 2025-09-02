@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Assignment routes for students
         Route::get('/assignments', [TaskAssignmentController::class, 'available'])->name('assignments.available');
         Route::get('/assignments/{assignment}', [TaskAssignmentController::class, 'showForStudent'])->name('assignments.show');
+        Route::post('/assignments/{assignment}/submit', [TaskController::class, 'storeAssignmentSubmission'])->name('assignments.submit');
 
         // Notification routes for students
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
