@@ -7,7 +7,8 @@
     <title>Dasbor Siswa - Pengumpulan Tugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="{{ asset('js/darkmode.js') }}"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="{{ asset('build/assets/app-BXl0pDBb.css') }}" rel="stylesheet">
+    <script src="{{ asset('build/assets/app-DjIouP1n.js') }}" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
