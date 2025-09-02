@@ -15,7 +15,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view('welcome');
+        return view('student.tasks.create');
     }
 
     /**

@@ -87,16 +87,6 @@
             </div>
         </div>
 
-        <!-- Tombol Aksi Cepat -->
-        <div class="mb-8 flex space-x-4">
-            <a href="{{ route('tasks.create') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
-                📝 Kumpulkan Tugas Baru
-            </a>
-            <a href="{{ route('tasks.my') }}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition duration-300">
-                📋 Lihat Riwayat Tugas
-            </a>
-        </div>
-
         <!-- Daftar Tugas -->
         <div class="bg-white shadow rounded-lg p-6">
              <h2 class="text-xl font-bold text-gray-800 mb-6">Riwayat Pengumpulan Tugas</h2>
