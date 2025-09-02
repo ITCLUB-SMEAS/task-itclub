@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskAssignmentController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -65,6 +66,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Assignment routes for students
         Route::get('/assignments', [TaskAssignmentController::class, 'available'])->name('assignments.available');
         Route::get('/assignments/{assignment}', [TaskAssignmentController::class, 'showForStudent'])->name('assignments.show');
+
+        // Notification routes for students
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/count', [NotificationController::class, 'getUnreadCount'])->name('notifications.count');
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     });
 
     // Routes untuk Admin

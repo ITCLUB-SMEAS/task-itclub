@@ -24,10 +24,19 @@
                     <p class="text-xs text-gray-400">Kelas: {{ Auth::user()->kelas }}</p>
                 @endif
             </div>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</button>
-            </form>
+            <div class="flex items-center space-x-4">
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-600 hover:text-blue-600 transition-colors">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 hidden"></span>
+                    </a>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</button>
+                </form>
+            </div>
         </div>
     </header>
 
@@ -148,6 +157,30 @@
              </div>
         </div>
     </main>
+
+    <script>
+        // Check for unread notifications
+        function checkNotifications() {
+            fetch('/notifications/count')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notification-badge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count > 99 ? '99+' : data.count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error checking notifications:', error));
+        }
+
+        // Check notifications on page load
+        document.addEventListener('DOMContentLoaded', checkNotifications);
+
+        // Check notifications every 30 seconds
+        setInterval(checkNotifications, 30000);
+    </script>
 
 </body>
 </html>

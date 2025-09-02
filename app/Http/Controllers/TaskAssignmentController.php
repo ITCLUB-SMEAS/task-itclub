@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TaskAssignment;
 use App\Models\User;
+use App\Services\NotificationService;
 
 class TaskAssignmentController extends Controller
 {
@@ -53,7 +54,7 @@ class TaskAssignmentController extends Controller
             'deadline.after' => 'Deadline harus di masa depan.',
         ]);
 
-        TaskAssignment::create([
+        $assignment = TaskAssignment::create([
             'title' => $request->title,
             'description' => $request->description,
             'category' => $request->category,
@@ -64,8 +65,12 @@ class TaskAssignmentController extends Controller
             'is_active' => true,
         ]);
 
+        // Send notifications to students
+        $notificationService = new NotificationService();
+        $notificationService->sendAssignmentNotification($assignment);
+
         return redirect()->route('admin.assignments.index')
-                        ->with('success', 'Task assignment berhasil dibuat!');
+                        ->with('success', 'Task assignment berhasil dibuat dan notifikasi telah dikirim!');
     }
 
     /**
