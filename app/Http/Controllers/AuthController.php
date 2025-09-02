@@ -47,6 +47,11 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
+            // Cek apakah email sudah diverifikasi
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
             // Redirect berdasarkan role
             if ($user->role === 'admin') {
                 return redirect()->intended('/admin/dashboard');
@@ -90,13 +95,16 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'kelas' => $request->kelas,
             'role' => 'student', // Default role untuk registrasi
-            'email_verified_at' => now(), // Langsung verified untuk kemudahan
+            // email_verified_at akan di-set setelah verifikasi
         ]);
+
+        // Kirim email verifikasi
+        event(new \Illuminate\Auth\Events\Registered($user));
 
         // Login otomatis setelah registrasi
         Auth::login($user);
 
-        return redirect('/student/dashboard')->with('success', 'Registrasi berhasil! Selamat datang di Task Club IT.');
+        return redirect()->route('verification.notice');
     }
 
     /**

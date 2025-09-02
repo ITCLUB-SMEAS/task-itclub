@@ -48,6 +48,45 @@
             </div>
         </div>
 
+        <!-- Assignment Management Section -->
+        <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Assignment System</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('assignments.available') }}"
+                   class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Assignment Tersedia</div>
+                        <div class="text-sm opacity-90">Lihat tugas yang bisa dikerjakan</div>
+                    </div>
+                </a>
+
+                <a href="{{ route('tasks.my') }}"
+                   class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-4 rounded-lg shadow transition duration-300 flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l3 3-3 3"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Riwayat Submission</div>
+                        <div class="text-sm opacity-90">Track progress assignment</div>
+                    </div>
+                </a>
+
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg shadow flex items-center">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <div class="font-medium">Deadline Terdekat</div>
+                        <div class="text-sm opacity-90">{{ $urgentAssignments ?? 0 }} assignment mendesak</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tombol Aksi Cepat -->
         <div class="mb-8 flex space-x-4">
             <a href="{{ route('tasks.create') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
