@@ -6,7 +6,6 @@
     <meta name="user-id" content="{{ Auth::id() }}">
     <title>Dasbor Admin - Pengumpulan Tugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{{ asset('js/darkmode.js') }}"></script>
     <link href="{{ asset('build/assets/app-BXl0pDBb.css') }}" rel="stylesheet">
     <script src="{{ asset('build/assets/app-DjIouP1n.js') }}" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,37 +15,19 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .modal-hidden { display: none; }
-
-        /* Dark mode styles */
-        .dark body { background-color: #1a1a1a; color: #e1e1e1; }
-        .dark .bg-white { background-color: #2a2a2a; }
-        .dark .bg-gray-100 { background-color: #1a1a1a; }
-        .dark .text-gray-900 { color: #e1e1e1; }
-        .dark .text-gray-600, .dark .text-gray-500 { color: #9ca3af; }
-        .dark .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5); }
-        .dark .border-gray-200 { border-color: #4a4a4a; }
-        .dark .bg-gray-50 { background-color: #2a2a2a; }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+<body class="bg-gray-100 transition-colors duration-200">
 
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm">
+    <header class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dasbor Admin</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Dasbor Admin</h1>
             <div class="flex items-center space-x-4">
-                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
-                    </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                    </svg>
-                </button>
-                <span class="text-sm text-gray-600 dark:text-gray-300">Selamat datang, {{ Auth::user()->name }}!</span>
+                <span class="text-sm text-gray-600">Selamat datang, {{ Auth::user()->name }}!</span>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
-                    <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">Logout</button>
+                    <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</button>
                 </form>
             </div>
         </div>

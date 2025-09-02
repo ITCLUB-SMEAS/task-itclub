@@ -447,7 +447,7 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-4">Diskusi Tugas</h3>
 
                 <!-- Form untuk menambah komentar -->
-                <form action="{{ route('task.comments.store', $task) }}" method="POST" class="mb-6">
+                <form action="{{ route('task.comments.store', $assignment) }}" method="POST" class="mb-6">
                     @csrf
                     <div class="mb-4">
                         <textarea name="content" rows="3"
@@ -464,7 +464,7 @@
 
                 <!-- Daftar komentar -->
                 <div class="space-y-4">
-                    @forelse($task->comments as $comment)
+                    @forelse($assignment->comments ?? [] as $comment)
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <div class="flex justify-between items-start">
                             <div class="font-medium text-gray-900">

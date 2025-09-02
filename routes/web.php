@@ -73,7 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Notification routes for students
             // Komentar
-    Route::post('/tasks/{task}/comments', [App\Http\Controllers\TaskCommentController::class, 'store'])->name('task.comments.store');
+    Route::post('/tasks/{taskId}/comments', [App\Http\Controllers\TaskCommentController::class, 'store'])->name('task.comments.store');
     Route::delete('/comments/{comment}', [App\Http\Controllers\TaskCommentController::class, 'destroy'])->name('task.comments.destroy');
 
     // Notifikasi
