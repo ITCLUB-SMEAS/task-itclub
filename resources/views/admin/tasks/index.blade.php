@@ -47,16 +47,16 @@
     <!-- Filter & Search -->
     <div class="bg-white p-4 rounded-lg shadow mb-6">
             <form action="{{ route('admin.tasks') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div class="md:col-span-5">
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari</label>
-                    <input type="text" name="search" id="search" placeholder="Nama/Email Siswa"
+                <div class="md:col-span-4 min-w-0">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Apa?</label>
+                    <input type="text" name="search" id="search" placeholder="Nama atau Email Siswa"
                         value="{{ request('search') }}"
-                        class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                        class="h-10 min-w-0 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                 </div>
 
-                <div class="md:col-span-3">
+                <div class="md:col-span-3 min-w-0">
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" id="status" class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                    <select name="status" id="status" class="h-10 min-w-0 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Review</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
@@ -64,9 +64,9 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="md:col-span-2 min-w-0">
                     <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-                    <select name="kelas" id="kelas" class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                    <select name="kelas" id="kelas" class="h-10 min-w-0 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                         <option value="">Semua Kelas</option>
                         @foreach($kelasOptions as $kelas)
                             <option value="{{ $kelas }}" {{ request('kelas') == $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
@@ -74,7 +74,7 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-2 flex items-end space-x-2">
+                <div class="md:col-span-3 flex flex-wrap items-end gap-2 md:justify-end">
                     <button type="submit" class="h-10 inline-flex items-center px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Filter
                     </button>
