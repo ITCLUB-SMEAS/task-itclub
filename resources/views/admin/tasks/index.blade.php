@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Tugas - Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .modal-hidden { display: none; }
-    </style>
-</head>
-<body class="bg-gray-100">
+@extends('layouts.app')
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+@section('content')
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-4">
                 <a href="{{ route('admin.dashboard') }}" class="text-blue-600 hover:text-blue-800">
                     ← Kembali ke Dashboard
@@ -32,9 +17,6 @@
                 <button type="submit" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</button>
             </form>
         </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 
         @if(session('success'))
             <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
@@ -42,8 +24,8 @@
             </div>
         @endif
 
-        <!-- Filter dan Statistik -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Statistik Ringkas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-sm font-medium text-gray-700">Total Tugas</h3>
                 <p class="mt-2 text-2xl font-bold text-gray-900">{{ $tasks->count() }}</p>
@@ -62,8 +44,8 @@
             </div>
         </div>
 
-        <!-- Filter & Search Tools -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <!-- Filter & Search -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
             <form action="{{ route('admin.tasks') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari</label>
@@ -92,14 +74,14 @@
                     </select>
                 </div>
 
-                <div class="flex items-end">
+                <div class="flex items-end space-x-2">
                     <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Filter Tugas
                     </button>
-                    <a href="{{ route('admin.tasks') }}" class="ml-2 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{{ route('admin.tasks') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Reset
                     </a>
-                    <a href="{{ route('admin.export.tasks') }}?{{ http_build_query(request()->all()) }}" class="ml-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <a href="{{ route('admin.export.tasks') }}?{{ http_build_query(request()->all()) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
@@ -107,7 +89,9 @@
                     </a>
                 </div>
             </form>
-        </div>        <!-- Tabel Semua Tugas -->
+        </div>
+
+        <!-- Tabel Semua Tugas -->
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800">Semua Tugas</h2>
@@ -220,8 +204,6 @@
                 </table>
             </div>
         </div>
-    </main>
-
     <!-- Modal untuk Revisi -->
     <div id="revisionModal" class="fixed z-10 inset-0 overflow-y-auto modal-hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -285,6 +267,5 @@
             }
         });
     </script>
-
-</body>
-</html>
+    </div>
+@endsection

@@ -43,6 +43,10 @@ class TasksExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
             });
         }
 
+        if (isset($this->filters['assignment_id']) && !empty($this->filters['assignment_id'])) {
+            $query->where('assignment_id', $this->filters['assignment_id']);
+        }
+
         return $query->latest()->get();
     }
 

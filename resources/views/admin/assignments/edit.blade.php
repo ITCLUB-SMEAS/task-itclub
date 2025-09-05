@@ -132,12 +132,24 @@
                 <div>
                     <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements/Persyaratan</label>
                     <div class="space-y-2">
+                        @php
+                            $reqLines = [];
+                            $oldReq = old('requirements');
+                            if (is_array($oldReq)) {
+                                $reqLines = $oldReq;
+                            } elseif (is_string($oldReq) && $oldReq !== '') {
+                                $decoded = json_decode($oldReq, true);
+                                $reqLines = is_array($decoded) ? $decoded : preg_split('/\r\n|\r|\n/', $oldReq);
+                            } elseif (is_array($assignment->requirements)) {
+                                $reqLines = $assignment->requirements;
+                            }
+                        @endphp
                         <textarea id="requirements_text"
                                   rows="3"
                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                   placeholder="Masukkan requirements, satu per baris. Contoh:&#10;- Menggunakan HTML5 dan CSS3&#10;- Responsive design&#10;- Upload ke GitHub Pages"
-                                  onchange="convertToJson()">{{ $assignment->requirements ? implode("\n", json_decode($assignment->requirements, true)) : '' }}</textarea>
-                        <input type="hidden" id="requirements" name="requirements" value="{{ old('requirements', $assignment->requirements) }}">
+                                  onchange="convertToJson()">{{ implode("\n", $reqLines) }}</textarea>
+                        <div id="requirements-container"><!-- hidden inputs inserted by JS --></div>
                         <p class="text-xs text-gray-500">Tuliskan setiap requirement di baris baru. Akan otomatis diformat.</p>
                     </div>
                 </div>
@@ -189,17 +201,24 @@
     <script>
         function convertToJson() {
             const textArea = document.getElementById('requirements_text');
-            const hiddenInput = document.getElementById('requirements');
+            const container = document.getElementById('requirements-container');
+
+            // Hapus input tersembunyi yang sudah ada
+            container.innerHTML = '';
 
             if (textArea.value.trim()) {
                 const lines = textArea.value.split('\n')
                     .map(line => line.trim())
                     .filter(line => line.length > 0)
-                    .map(line => line.replace(/^[-*•]\s*/, '')); // Remove bullet points
+                    .map(line => line.replace(/^[-*•]\s*/, ''));
 
-                hiddenInput.value = JSON.stringify(lines);
-            } else {
-                hiddenInput.value = '[]';
+                lines.forEach(line => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'requirements[]';
+                    input.value = line;
+                    container.appendChild(input);
+                });
             }
         }
 

@@ -235,15 +235,15 @@
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-600">Total Submissions</span>
-                            <span class="text-sm font-semibold text-gray-900">{{ $submissions->count() }}</span>
+                            <span class="text-sm font-semibold text-gray-900">{{ $assignment->submissions->count() }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-600">Tepat Waktu</span>
-                            <span class="text-sm font-semibold text-green-600">{{ $submissions->where('is_late', false)->count() }}</span>
+                            <span class="text-sm font-semibold text-green-600">{{ $assignment->submissions->where('is_late', false)->count() }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-600">Terlambat</span>
-                            <span class="text-sm font-semibold text-red-600">{{ $submissions->where('is_late', true)->count() }}</span>
+                            <span class="text-sm font-semibold text-red-600">{{ $assignment->submissions->where('is_late', true)->count() }}</span>
                         </div>
                     </div>
                 </div>

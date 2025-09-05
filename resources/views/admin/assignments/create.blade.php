@@ -128,14 +128,22 @@
                 <div>
                     <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements/Persyaratan</label>
                     <div class="space-y-2">
+                        @php
+                            $reqLines = [];
+                            $oldReq = old('requirements');
+                            if (is_array($oldReq)) {
+                                $reqLines = $oldReq;
+                            } elseif (is_string($oldReq) && $oldReq !== '') {
+                                $decoded = json_decode($oldReq, true);
+                                $reqLines = is_array($decoded) ? $decoded : preg_split('/\r\n|\r|\n/', $oldReq);
+                            }
+                        @endphp
                         <textarea id="requirements_text"
                                   rows="3"
                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                   placeholder="Masukkan requirements, satu per baris. Contoh:&#10;- Menggunakan HTML5 dan CSS3&#10;- Responsive design&#10;- Upload ke GitHub Pages"
-                                  onchange="convertToJson()">{{ old('requirements') ? implode("\n", json_decode(old('requirements'), true) ?? []) : '' }}</textarea>
-                        <div id="requirements-container">
-                            <!-- Hidden inputs will be inserted here by JS -->
-                        </div>
+                                  onchange="convertToJson()">{{ implode("\n", $reqLines) }}</textarea>
+                        <div id="requirements-container"><!-- Hidden inputs will be inserted here by JS --></div>
                         <p class="text-xs text-gray-500">Tuliskan setiap requirement di baris baru. Akan otomatis diformat.</p>
                     </div>
                 </div>
@@ -170,7 +178,7 @@
     </main>
 
     <script>
-        function convertToJson() {
+    function convertToJson() {
             const textArea = document.getElementById('requirements_text');
             const container = document.getElementById('requirements-container');
 
