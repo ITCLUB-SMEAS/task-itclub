@@ -46,17 +46,17 @@
 
     <!-- Filter & Search -->
     <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <form action="{{ route('admin.tasks') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
+            <form action="{{ route('admin.tasks') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-5">
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari</label>
                     <input type="text" name="search" id="search" placeholder="Nama/Email Siswa"
                         value="{{ request('search') }}"
-                        class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                        class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                 </div>
 
-                <div>
+                <div class="md:col-span-3">
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" id="status" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                    <select name="status" id="status" class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Review</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
@@ -64,9 +64,9 @@
                     </select>
                 </div>
 
-                <div>
+                <div class="md:col-span-2">
                     <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
-                    <select name="kelas" id="kelas" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                    <select name="kelas" id="kelas" class="h-10 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                         <option value="">Semua Kelas</option>
                         @foreach($kelasOptions as $kelas)
                             <option value="{{ $kelas }}" {{ request('kelas') == $kelas ? 'selected' : '' }}>{{ $kelas }}</option>
@@ -74,18 +74,18 @@
                     </select>
                 </div>
 
-                <div class="flex items-end space-x-2">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Filter Tugas
+                <div class="md:col-span-2 flex items-end space-x-2">
+                    <button type="submit" class="h-10 inline-flex items-center px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Filter
                     </button>
-                    <a href="{{ route('admin.tasks') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{{ route('admin.tasks') }}" class="h-10 inline-flex items-center px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Reset
                     </a>
-                    <a href="{{ route('admin.export.tasks') }}?{{ http_build_query(request()->all()) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <a href="{{ route('admin.export.tasks') }}?{{ http_build_query(request()->all()) }}" class="h-10 inline-flex items-center px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Excel
+                        Export
                     </a>
                 </div>
             </form>
@@ -97,9 +97,9 @@
                 <h2 class="text-xl font-bold text-gray-800">Semua Tugas</h2>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto max-h-[70vh] overflow-y-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siswa</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
@@ -112,7 +112,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($tasks as $task)
-                            <tr class="{{ $task->status == 'rejected' ? 'bg-red-50' : '' }}">
+                            <tr class="odd:bg-white even:bg-gray-50 {{ $task->status == 'rejected' ? 'bg-red-50' : '' }}">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">{{ $task->nama_lengkap }}</div>
                                     <div class="text-sm text-gray-500">{{ $task->email }}</div>
@@ -175,18 +175,18 @@
                                         @endif
 
                                         @if($task->status != 'rejected')
-                                            <button onclick="openRevisionModal('{{ $task->nama_lengkap }}', {{ $task->id }})" class="text-red-600 hover:text-red-900">
+                                            <button onclick="openRevisionModal(event, '{{ $task->nama_lengkap }}', {{ $task->id }})" class="text-red-600 hover:text-red-900">
                                                 Revisi
                                             </button>
                                         @else
-                                            <button onclick="openRevisionModal('{{ $task->nama_lengkap }}', {{ $task->id }})" class="text-blue-600 hover:text-blue-900">
+                                            <button onclick="openRevisionModal(event, '{{ $task->nama_lengkap }}', {{ $task->id }})" class="text-blue-600 hover:text-blue-900">
                                                 Edit Revisi
                                             </button>
                                         @endif
                                     </div>
 
                                     @if($task->status == 'rejected' && $task->catatan_admin)
-                                        <div class="mt-2 text-xs text-red-600">
+                                        <div class="mt-2 text-xs text-red-600 revision-reason">
                                             "{{ $task->catatan_admin }}"
                                         </div>
                                     @endif
@@ -194,7 +194,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                     <div class="text-4xl mb-4">📝</div>
                                     <p>Belum ada tugas yang dikumpulkan</p>
                                 </td>
@@ -241,12 +241,12 @@
         const revisionForm = document.getElementById('revisionForm');
         const revisionReason = document.getElementById('revisionReason');
 
-        function openRevisionModal(studentName, taskId) {
+        function openRevisionModal(evt, studentName, taskId) {
             studentNameEl.textContent = studentName;
             revisionForm.action = `/admin/tasks/${taskId}/status`;
 
             // If editing existing revision, get current reason
-            const currentReason = event.target.closest('tr').querySelector('.text-red-600');
+            const currentReason = evt && evt.target ? evt.target.closest('tr').querySelector('.revision-reason') : null;
             if (currentReason) {
                 revisionReason.value = currentReason.textContent.replace(/"/g, '');
             } else {
